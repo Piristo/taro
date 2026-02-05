@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  env: {
+    NEXT_PUBLIC_APP_VERSION: new Date().toISOString(),
+  },
 };
 
 export default nextConfig;

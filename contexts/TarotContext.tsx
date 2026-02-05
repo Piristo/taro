@@ -14,6 +14,49 @@ import { createId, pickUnique } from "../lib/utils";
 import { clearSessions, getProfile, getSessions, saveProfile, upsertSession } from "../lib/storage";
 import { getZodiacSign } from "../lib/astro";
 
+function parseBirthDate(input: string) {
+  const trimmed = input.trim();
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  const dot = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+  const slash = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+
+  let year: number | null = null;
+  let month: number | null = null;
+  let day: number | null = null;
+
+  if (iso.test(trimmed)) {
+    const [y, m, d] = trimmed.split("-").map((v) => parseInt(v, 10));
+    year = y;
+    month = m;
+    day = d;
+  } else if (dot.test(trimmed)) {
+    const match = trimmed.match(dot);
+    if (match) {
+      day = parseInt(match[1], 10);
+      month = parseInt(match[2], 10);
+      year = parseInt(match[3], 10);
+    }
+  } else if (slash.test(trimmed)) {
+    const match = trimmed.match(slash);
+    if (match) {
+      day = parseInt(match[1], 10);
+      month = parseInt(match[2], 10);
+      year = parseInt(match[3], 10);
+    }
+  }
+
+  if (!year || !month || !day) return null;
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > 31) return null;
+
+  const date = new Date(year, month - 1, day);
+  if (Number.isNaN(date.getTime())) return null;
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+
+  const canonical = `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return { date, canonical };
+}
+
 type ReadingCardView = {
   card: TarotCardData;
   isReversed: boolean;
@@ -183,11 +226,12 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
       saveProfile({ id: "profile", ...next }).catch(() => undefined);
       return;
     }
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return;
-    const zodiac = getZodiacSign(date);
+
+    const parsed = parseBirthDate(value);
+    if (!parsed) return;
+    const zodiac = getZodiacSign(parsed.date);
     const next = {
-      birthDate: value,
+      birthDate: parsed.canonical,
       zodiac: {
         id: zodiac.id,
         name: zodiac.name,

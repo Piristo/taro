@@ -133,7 +133,6 @@ export default function TarotCard({
             "tarot-card-face tarot-card-front absolute inset-0 relative",
             isRevealed ? "shine-sweep" : ""
           )}
-          style={{ transform: "rotateY(180deg)" }}
         >
           <div
             className="flex h-full w-full flex-col items-center justify-between px-3 py-4"

@@ -16,6 +16,13 @@ export function formatDate(timestamp: number) {
   }).format(date);
 }
 
+export function formatBirthDate(value: string) {
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  if (!iso.test(value)) return value;
+  const [y, m, d] = value.split("-");
+  return `${d}.${m}.${y}`;
+}
+
 export function shuffle<T>(array: T[]) {
   const copy = [...array];
   for (let i = copy.length - 1; i > 0; i -= 1) {

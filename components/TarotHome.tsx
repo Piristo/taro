@@ -13,7 +13,7 @@ import CardDisplay from "./CardDisplay";
 import Interpretation from "./Interpretation";
 import HistoryDrawer from "./HistoryDrawer";
 import { tarotDeck } from "../lib/tarot-data";
-import { hashString } from "../lib/utils";
+import { formatBirthDate, hashString } from "../lib/utils";
 import PeriodTabs, { PeriodKey } from "./PeriodTabs";
 import StatRing from "./StatRing";
 
@@ -72,6 +72,22 @@ export default function TarotHome() {
     telegram.ready();
     telegram.expand();
     telegram.setColors("#2C1810", "#1B0F0A");
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const version = process.env.NEXT_PUBLIC_APP_VERSION;
+    if (!version) return;
+    const params = new URLSearchParams(window.location.search);
+    const current = params.get("v");
+    if (current !== version) {
+      params.set("v", version);
+      window.localStorage.setItem("appVersion", version);
+      const nextUrl = `${window.location.pathname}?${params.toString()}${window.location.hash}`;
+      window.location.replace(nextUrl);
+    } else {
+      window.localStorage.setItem("appVersion", version);
+    }
   }, []);
 
 
@@ -203,7 +219,9 @@ export default function TarotHome() {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="section-title">Дата рождения</p>
-                    <p className="text-sm text-[var(--ink-100)]">{profile.birthDate ?? ""}</p>
+                    <p className="text-sm text-[var(--ink-100)]">
+                      {profile.birthDate ? formatBirthDate(profile.birthDate) : ""}
+                    </p>
                   </div>
                   <button
                     type="button"
@@ -240,7 +258,11 @@ export default function TarotHome() {
               spreads={spreads}
               selectedId={selectedSpreadId}
               recommendedId={predictive.recommendedId}
-              onSelect={selectSpread}
+              onSelect={(id) => {
+                selectSpread(id);
+                startReading(id);
+                telegram.haptic("light");
+              }}
             />
           </div>
 
