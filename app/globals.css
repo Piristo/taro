@@ -1,26 +1,72 @@
 @import "tailwindcss";
+@import "../styles/tarot.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-ink: #1b0f0a;
+  --bg-ember: #2c1810;
+  --bg-veil: #120a07;
+  --bg-mist: #23120c;
+  --ink-100: #f6efe7;
+  --ink-200: #e6d9ca;
+  --ink-300: #c9b49d;
+  --gold-400: #daa520;
+  --bronze-500: #8b4513;
+  --ember-600: #5a2e16;
+  --shadow-900: rgba(6, 3, 2, 0.75);
+  --glass-600: rgba(18, 10, 7, 0.6);
+  --glass-400: rgba(28, 16, 11, 0.45);
+  --glow-amber: rgba(218, 165, 32, 0.45);
+  --glow-rose: rgba(255, 174, 108, 0.35);
+  --font-display: "Cinzel", "Trajan Pro", "Garamond", "Palatino Linotype",
+    "Book Antiqua", serif;
+  --font-body: "Cormorant Garamond", "Garamond", "Georgia", serif;
+  --font-ui: "Marcellus", "Garamond", "Palatino", serif;
+  --radius-outer: 26px;
+  --radius-inner: 18px;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-ember);
+  --color-foreground: var(--ink-100);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-ui);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(120% 80% at 15% 20%, rgba(90, 46, 22, 0.35), transparent 60%),
+    radial-gradient(120% 90% at 90% 15%, rgba(218, 165, 32, 0.18), transparent 55%),
+    radial-gradient(120% 90% at 40% 110%, rgba(90, 46, 22, 0.35), transparent 55%),
+    linear-gradient(160deg, #140a07 0%, #2c1810 45%, #1a0f0a 100%);
+  color: var(--ink-100);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(218, 165, 32, 0.35);
+  color: var(--ink-100);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

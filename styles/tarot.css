@@ -1,0 +1,149 @@
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: var(--font-ui);
+  }
+}
+
+@layer components {
+  .safe-area {
+    padding: calc(var(--safe-top) + 16px) calc(var(--safe-right) + 16px)
+      calc(var(--safe-bottom) + 20px) calc(var(--safe-left) + 16px);
+  }
+
+  .glass-panel {
+    background: linear-gradient(
+      160deg,
+      rgba(28, 16, 11, 0.7) 0%,
+      rgba(18, 10, 7, 0.5) 100%
+    );
+    border: 1px solid rgba(218, 165, 32, 0.18);
+    box-shadow: 0 20px 50px rgba(5, 2, 1, 0.45);
+    backdrop-filter: blur(18px);
+    border-radius: var(--radius-outer);
+  }
+
+  .glass-panel.soft {
+    background: linear-gradient(
+      180deg,
+      rgba(35, 18, 12, 0.72) 0%,
+      rgba(18, 10, 7, 0.5) 100%
+    );
+    border: 1px solid rgba(218, 165, 32, 0.12);
+    box-shadow: 0 12px 30px rgba(5, 2, 1, 0.3);
+    border-radius: var(--radius-inner);
+  }
+
+  .text-gold {
+    color: var(--gold-400);
+  }
+
+  .text-ember {
+    color: var(--bronze-500);
+  }
+
+  .glow-amber {
+    box-shadow:
+      0 0 0 1px rgba(218, 165, 32, 0.2),
+      0 0 32px rgba(218, 165, 32, 0.2),
+      0 15px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .ornament-line {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(218, 165, 32, 0.35),
+      transparent
+    );
+  }
+
+  .tarot-card {
+    perspective: 1200px;
+  }
+
+  .tarot-card-inner {
+    transform-style: preserve-3d;
+    transition: transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .tarot-card-face {
+    backface-visibility: hidden;
+    border-radius: 20px;
+    overflow: hidden;
+    background: radial-gradient(
+      circle at 20% 20%,
+      rgba(218, 165, 32, 0.12),
+      transparent 55%
+    );
+    border: 1px solid rgba(218, 165, 32, 0.18);
+  }
+
+  .tarot-card-back {
+    background:
+      linear-gradient(160deg, rgba(26, 14, 9, 0.95), rgba(44, 24, 16, 0.9)),
+      radial-gradient(circle at 50% 20%, rgba(218, 165, 32, 0.2), transparent 60%);
+    transform: rotateY(180deg);
+  }
+
+  .tarot-card-front {
+    background: linear-gradient(160deg, rgba(25, 13, 8, 0.9), rgba(44, 24, 16, 0.8));
+  }
+
+  .float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+
+  .shine-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shine-sweep::after {
+    content: "";
+    position: absolute;
+    inset: -50% -30% 0;
+    background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.08), transparent 65%);
+    transform: translateX(-100%);
+    animation: shine-sweep 6s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .shadow-ritual {
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  40% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}

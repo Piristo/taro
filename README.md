@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Таро Гадание — Telegram Mini App (полностью оффлайн)
 
-## Getting Started
+Мистический мини‑опыт с 78 картами, локальной историей и премиальными анимациями. Никаких внешних API, рекламы, подписок или платных функций.
 
-First, run the development server:
+## Возможности
+
+- 78 карт Таро с прямыми/перевернутыми значениями, символизмом и психологическими подсказками.
+- 6 раскладов (3, 5, 9, 10 карт) с UX Max Pro потоком.
+- История сессий в IndexedDB.
+- 3D переворот, стек анимаций, Canvas‑частицы, glassmorphism.
+- Полная автономность: все данные и визуалы локальные.
+
+## Технологии
+
+- Next.js (App Router) + TypeScript
+- TailwindCSS + Framer Motion
+- Telegram WebApp SDK (через встроенный объект Telegram)
+- IndexedDB (нативно)
+
+## Запуск локально
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Сборка и запуск
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Telegram Mini App подключение
 
-To learn more about Next.js, take a look at the following resources:
+1. В BotFather создайте бота или выберите существующего.
+2. Откройте `/setdomain` и задайте домен вашего деплоя.
+3. Откройте `/setmenubutton` и укажите WebApp URL.
+4. Внутри Telegram откройте бота и запускайте мини‑приложение.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Оффлайн‑режим
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Приложение не делает сетевых запросов и хранит данные только локально. Для полного оффлайн‑кеша можно настроить статический экспорт через `next.config.ts` (опционально).
 
-## Deploy on Vercel
+## Структура
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `app/` — страницы и глобальные стили
+- `components/` — UI и анимации
+- `lib/` — данные, утилиты, IndexedDB
+- `hooks/` — жесты и поведенческие хуки
+- `contexts/` — состояние расклада
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Безопасность
+
+- Нет внешних скриптов и трекеров
+- Данные только локально в браузере
+- Рендер только текстом без HTML‑инъекций
