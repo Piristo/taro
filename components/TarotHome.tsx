@@ -119,6 +119,13 @@ export default function TarotHome() {
     []
   );
 
+  const ritualDense =
+    currentSpread?.layout === "cross" ||
+    currentSpread?.layout === "grid" ||
+    currentSpread?.layout === "celtic";
+
+  const ritualCardSize = ritualDense ? "xs" : "sm";
+
   useEffect(() => {
     const spreadMap: Record<PeriodKey, string> = {
       today: "daily-3",
@@ -433,9 +440,3 @@ export default function TarotHome() {
     </div>
   );
 }
-  const ritualDense =
-    currentSpread?.layout === "cross" ||
-    currentSpread?.layout === "grid" ||
-    currentSpread?.layout === "celtic";
-
-  const ritualCardSize = ritualDense ? "xs" : "sm";
