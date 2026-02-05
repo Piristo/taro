@@ -16,10 +16,11 @@ type TarotCardProps = {
   positionLabel?: string;
   onFlip?: () => void;
   onHold?: () => void;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
 };
 
 const sizeClasses: Record<NonNullable<TarotCardProps["size"]>, string> = {
+  xs: "h-[160px] w-[110px]",
   sm: "h-[180px] w-[120px]",
   md: "h-[220px] w-[150px]",
   lg: "h-[260px] w-[180px]",
@@ -41,8 +42,14 @@ export default function TarotCard({
   const [imageError, setImageError] = useState(false);
   const imagePath = getRwsImagePath(card);
   const showImage = Boolean(imagePath) && !imageError;
-  const isSmall = size === "sm";
-  const arcanaLabel = isSmall ? (card.arcana === "major" ? "Ст." : "Мл.") : card.arcana === "major" ? "Старший" : "Младший";
+  const isSmall = size === "xs" || size === "sm";
+  const arcanaLabel = isSmall
+    ? card.arcana === "major"
+      ? "Ст."
+      : "Мл."
+    : card.arcana === "major"
+      ? "Старший"
+      : "Младший";
   const elementLabel = isSmall
     ? card.element === "Воздух"
       ? "Возд."
@@ -145,9 +152,11 @@ export default function TarotCard({
                     src={imagePath ?? ""}
                     alt={card.name}
                     className="rws-image"
-                    fill
-                    sizes="(max-width: 640px) 160px, 220px"
+                    width={300}
+                    height={500}
+                    sizes="(max-width: 640px) 140px, 200px"
                     onError={() => setImageError(true)}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
                   <div

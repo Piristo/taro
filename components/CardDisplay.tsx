@@ -22,7 +22,7 @@ type CardDisplayPropsInternal = {
   onHold: (index: number) => void;
   showHeader?: boolean;
   variant?: "panel" | "plain";
-  cardSize?: "sm" | "md" | "lg";
+  cardSize?: "xs" | "sm" | "md" | "lg";
 };
 
 const parseGridArea = (value?: string) => {
@@ -162,33 +162,68 @@ export default function CardDisplay({
       ) : null}
 
       {layout === "celtic" ? (
-        <div
-          className="grid gap-4"
-          style={{
-            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-            gridTemplateRows: "repeat(4, minmax(0, 1fr))",
-          }}
-        >
-          {cards.map((item, index) => (
-            <motion.div
-              key={item.card.id}
-              style={parseGridArea(item.position.gridArea)}
-              {...buildMotionProps(index, index === 1 ? 90 : 0, 0)}
-            >
-              <TarotCard
-                card={item.card}
-                isRevealed={item.isRevealed}
-                isReversed={item.isReversed}
-                isActive={index === activeIndex}
-                positionLabel={item.position.title}
-                onFlip={() => onFlip(index)}
-                onHold={() => onHold(index)}
-                size={"sm"}
-              />
-            </motion.div>
-          ))}
+        <div className="celtic-board">
+          {cards.map((item, index) => {
+            const pos = getCelticPosition(index);
+            return (
+              <motion.div
+                key={item.card.id}
+                className="celtic-slot"
+                style={{
+                  left: `${pos.left}%`,
+                  top: `${pos.top}%`,
+                  transform: `translate(-50%, -50%) rotate(${pos.rotate}deg)`,
+                }}
+                {...buildMotionProps(index, 0, 0)}
+              >
+                <TarotCard
+                  card={item.card}
+                  isRevealed={item.isRevealed}
+                  isReversed={item.isReversed}
+                  isActive={index === activeIndex}
+                  positionLabel={item.position.title}
+                  onFlip={() => onFlip(index)}
+                  onHold={() => onHold(index)}
+                  size={"xs"}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       ) : null}
     </div>
   );
+}
+
+function getCelticPosition(index: number) {
+  // Fits on a single phone screen: left cluster + right staff
+  const staffX = 85;
+  const staffY = [18, 38, 58, 78];
+  const crossX = 40;
+  const crossY = 48;
+
+  switch (index) {
+    case 0:
+      return { left: crossX, top: crossY, rotate: 0 };
+    case 1:
+      return { left: crossX, top: crossY, rotate: 90 };
+    case 2:
+      return { left: crossX, top: 72, rotate: 0 };
+    case 3:
+      return { left: 18, top: crossY, rotate: 0 };
+    case 4:
+      return { left: crossX, top: 24, rotate: 0 };
+    case 5:
+      return { left: 62, top: crossY, rotate: 0 };
+    case 6:
+      return { left: staffX, top: staffY[0], rotate: 0 };
+    case 7:
+      return { left: staffX, top: staffY[1], rotate: 0 };
+    case 8:
+      return { left: staffX, top: staffY[2], rotate: 0 };
+    case 9:
+      return { left: staffX, top: staffY[3], rotate: 0 };
+    default:
+      return { left: 50, top: 50, rotate: 0 };
+  }
 }

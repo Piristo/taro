@@ -193,8 +193,8 @@ export default function TarotHome() {
               </button>
             </div>
             <p className="text-sm text-[var(--ink-200)]">{predictive.message}</p>
-            <div className="card-panel soft flex flex-col gap-3 p-3">
-              {showBirthForm ? (
+            {showBirthForm ? (
+              <div className="card-panel soft flex flex-col gap-3 p-3">
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <p className="section-title">Дата рождения</p>
@@ -215,25 +215,22 @@ export default function TarotHome() {
                     aria-label="Дата рождения"
                   />
                 </div>
-              ) : (
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="section-title">Дата рождения</p>
-                    <p className="text-sm text-[var(--ink-100)]">
-                      {profile.birthDate ? formatBirthDate(profile.birthDate) : ""}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setEditingBirth(true)}
-                    className="rounded-full border border-[rgba(218,165,32,0.3)] px-3 py-2 text-[10px] uppercase tracking-[0.3em] text-[var(--ink-200)]"
-                  >
-                    Изменить
-                  </button>
-                </div>
-              )}
-              <p className="text-xs text-[var(--ink-200)]">{zodiacNote}</p>
-            </div>
+                <p className="text-xs text-[var(--ink-200)]">{zodiacNote}</p>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEditingBirth(true)}
+                className="profile-pill"
+              >
+                <span className="profile-pill-title">Знак:</span>
+                <span className="profile-pill-value">
+                  {profile.zodiac?.name ?? ""}
+                  {profile.birthDate ? ` · ${formatBirthDate(profile.birthDate)}` : ""}
+                </span>
+                <span className="profile-pill-action">Изменить</span>
+              </button>
+            )}
             <CardDisplay
               spread={currentSpread}
               cards={readingCards}
