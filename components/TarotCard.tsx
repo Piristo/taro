@@ -36,6 +36,21 @@ export default function TarotCard({
   const holdTimer = useRef<number | null>(null);
   const didHold = useRef(false);
   const { rotateY, rotateZ } = useCardFlip({ isRevealed, isReversed });
+  const isSmall = size === "sm";
+  const arcanaLabel = isSmall ? (card.arcana === "major" ? "Ст." : "Мл.") : card.arcana === "major" ? "Старший" : "Младший";
+  const elementLabel = isSmall
+    ? card.element === "Воздух"
+      ? "Возд."
+      : card.element === "Земля"
+        ? "Зем."
+        : card.element
+    : card.element;
+  const orientationLabel = isSmall
+    ? isReversed
+      ? "Перев." : "Прямая"
+    : isReversed
+      ? "Перевернутая"
+      : "Прямая";
 
   const stars = useMemo(() => {
     const rand = seededRandom(card.seed);
@@ -119,9 +134,14 @@ export default function TarotCard({
             className="flex h-full w-full flex-col items-center justify-between px-3 py-4"
             style={{ transform: `rotate(${rotateZ}deg)` }}
           >
-            <div className="flex w-full items-center justify-between text-[10px] uppercase tracking-[0.2em] text-[var(--ink-300)]">
-              <span>{card.arcana === "major" ? "Старший" : "Младший"}</span>
-              <span className="text-[var(--gold-400)]">{card.element}</span>
+            <div
+              className={cn(
+                "flex w-full items-center justify-between uppercase text-[var(--ink-300)]",
+                isSmall ? "text-[8px] tracking-[0.18em]" : "text-[10px] tracking-[0.2em]"
+              )}
+            >
+              <span>{arcanaLabel}</span>
+              <span className="text-[var(--gold-400)]">{elementLabel}</span>
             </div>
 
             <div className="w-full flex-1">
@@ -187,11 +207,21 @@ export default function TarotCard({
             </div>
 
             <div className="flex w-full flex-col items-center gap-1 pb-1">
-              <div className="text-center text-sm uppercase tracking-[0.2em] text-[var(--ink-200)]">
+              <div
+                className={cn(
+                  "text-center uppercase text-[var(--ink-200)]",
+                  isSmall ? "text-[10px] tracking-[0.18em] leading-tight" : "text-sm tracking-[0.2em]"
+                )}
+              >
                 {card.name}
               </div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-[var(--gold-400)]">
-                {isReversed ? "Перевернутая" : "Прямая"}
+              <div
+                className={cn(
+                  "uppercase text-[var(--gold-400)]",
+                  isSmall ? "text-[8px] tracking-[0.2em]" : "text-[10px] tracking-[0.25em]"
+                )}
+              >
+                {orientationLabel}
               </div>
             </div>
           </div>

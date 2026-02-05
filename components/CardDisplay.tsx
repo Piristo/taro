@@ -22,6 +22,7 @@ type CardDisplayPropsInternal = {
   onHold: (index: number) => void;
   showHeader?: boolean;
   variant?: "panel" | "plain";
+  cardSize?: "sm" | "md" | "lg";
 };
 
 const parseGridArea = (value?: string) => {
@@ -40,6 +41,7 @@ export default function CardDisplay({
   onHold,
   showHeader = true,
   variant = "panel",
+  cardSize,
 }: CardDisplayPropsInternal) {
   const handlers = useSwipe({
     onSwipeLeft: () => onActiveIndex(activeIndex + 1),
@@ -61,7 +63,7 @@ export default function CardDisplay({
 
   const layout = spread.layout;
   const isCompact = cards.length > 5;
-  const size = isCompact ? "sm" : "md";
+  const size = cardSize ?? (isCompact ? "sm" : "md");
 
   return (
     <div
@@ -84,7 +86,7 @@ export default function CardDisplay({
       ) : null}
 
       {layout === "line" ? (
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="scroll-row flex gap-3 overflow-x-auto pb-2">
           {cards.map((item, index) => (
             <TarotCard
               key={item.card.id}

@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { TarotCardData, TarotSpreadPosition } from "../lib/types";
+import { TarotCardData, TarotSpreadPosition, UserProfile } from "../lib/types";
 import { motion } from "framer-motion";
 import { fadeUp } from "../lib/animations";
+import { getRwsMeaning } from "../lib/rws";
 
 type InterpretationProps = {
   card?: TarotCardData;
   position?: TarotSpreadPosition;
   isRevealed: boolean;
   isReversed: boolean;
+  zodiac?: UserProfile["zodiac"];
 };
 
 export default function Interpretation({
@@ -17,6 +19,7 @@ export default function Interpretation({
   position,
   isRevealed,
   isReversed,
+  zodiac,
 }: InterpretationProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -37,6 +40,10 @@ export default function Interpretation({
   }
 
   const meaning = isReversed ? card.reversed : card.upright;
+  const classicMeaning = getRwsMeaning(card, isReversed);
+  const zodiacAccent = zodiac
+    ? buildZodiacAccent(zodiac, card.element)
+    : null;
 
   return (
     <motion.div
@@ -65,6 +72,22 @@ export default function Interpretation({
         <p className="text-base text-[var(--ink-100)]">{meaning.meaning}</p>
         <p className="mt-3 text-sm text-[var(--ink-200)]">{meaning.psychology}</p>
         <p className="mt-2 text-sm text-[var(--ink-200)]">{meaning.advice}</p>
+      </div>
+
+      {zodiacAccent ? (
+        <div className="rounded-2xl border border-[rgba(218,165,32,0.18)] bg-[rgba(18,10,7,0.35)] p-3 text-xs text-[var(--ink-200)]">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--ink-300)]">
+            Персональный акцент
+          </p>
+          <p className="mt-1">{zodiacAccent}</p>
+        </div>
+      ) : null}
+
+      <div className="rounded-2xl border border-[rgba(218,165,32,0.18)] bg-[rgba(18,10,7,0.35)] p-3 text-xs text-[var(--ink-200)]">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-[var(--ink-300)]">
+          Классическое значение (Rider-Waite)
+        </p>
+        <p className="mt-1">{classicMeaning}</p>
       </div>
 
       <button
@@ -97,4 +120,32 @@ export default function Interpretation({
       </div>
     </motion.div>
   );
+}
+
+const synergyMap: Record<string, { ally: string; contrast: string }> = {
+  "Огонь": { ally: "Воздух", contrast: "Вода" },
+  "Воздух": { ally: "Огонь", contrast: "Земля" },
+  "Вода": { ally: "Земля", contrast: "Огонь" },
+  "Земля": { ally: "Вода", contrast: "Воздух" },
+};
+
+function buildZodiacAccent(zodiac: NonNullable<UserProfile["zodiac"]>, cardElement: string) {
+  const synergy = synergyMap[zodiac.element];
+  if (!synergy) {
+    return `${zodiac.name} задает тон: ${zodiac.tone}. Фокус: ${zodiac.focus}.`;
+  }
+
+  if (cardElement === zodiac.element) {
+    return `${zodiac.name} усиливает карту: стихия ${cardElement} звучит уверенно. Тон: ${zodiac.tone}. Фокус: ${zodiac.focus}.`;
+  }
+
+  if (cardElement === synergy.ally) {
+    return `${zodiac.name} поддерживает карту через родственную стихию ${cardElement}. Тон: ${zodiac.tone}. Фокус: ${zodiac.focus}.`;
+  }
+
+  if (cardElement === synergy.contrast) {
+    return `${zodiac.name} добавляет контраст: стихия ${cardElement} требует мягкости. Тон: ${zodiac.tone}. Фокус: ${zodiac.focus}.`;
+  }
+
+  return `${zodiac.name} задает тон: ${zodiac.tone}. Фокус: ${zodiac.focus}.`;
 }

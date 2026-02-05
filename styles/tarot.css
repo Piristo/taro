@@ -126,11 +126,16 @@
     border-radius: 22px;
   }
 
+  .card-panel.soft {
+    background: linear-gradient(160deg, rgba(18, 10, 7, 0.78), rgba(30, 16, 11, 0.65));
+    border-radius: 18px;
+  }
+
   .section-title {
     font-family: var(--font-ui);
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.22em;
     color: var(--ink-300);
   }
 
@@ -151,9 +156,9 @@
     border-radius: 999px;
     border: 1px solid rgba(218, 165, 32, 0.3);
     padding: 8px 14px;
-    font-size: 12px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: none;
     color: var(--ink-200);
     transition: all 0.2s ease;
     background: rgba(14, 8, 6, 0.5);
@@ -179,8 +184,8 @@
     padding: 8px 16px;
     border-radius: 999px;
     font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.22em;
+    text-transform: none;
+    letter-spacing: 0.14em;
     color: var(--ink-300);
     background: transparent;
     transition: all 0.2s ease;
@@ -255,15 +260,39 @@
   }
 
   .stat-value {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--ink-100);
   }
 
   .stat-label {
-    font-size: 11px;
-    letter-spacing: 0.2em;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--ink-300);
+  }
+
+  .scroll-row {
+    scrollbar-width: none;
+  }
+
+  .scroll-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .date-input {
+    appearance: none;
+    border-radius: 12px;
+    border: 1px solid rgba(218, 165, 32, 0.3);
+    background: rgba(11, 6, 4, 0.6);
+    color: var(--ink-100);
+    padding: 8px 10px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .date-input::-webkit-calendar-picker-indicator {
+    filter: invert(0.7) sepia(1) hue-rotate(10deg) saturate(2);
   }
 }
 

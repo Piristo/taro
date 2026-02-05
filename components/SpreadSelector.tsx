@@ -21,7 +21,7 @@ export default function SpreadSelector({
     <div className="card-panel flex flex-col gap-3 p-4">
       <div className="section-head">
         <div>
-          <p className="section-title">Spread</p>
+          <p className="section-title">Расклад</p>
           <h2 className="text-lg text-[var(--ink-100)]">Выберите расклад</h2>
         </div>
         <div className="text-[10px] uppercase tracking-[0.3em] text-[var(--gold-400)]">

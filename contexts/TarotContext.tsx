@@ -9,9 +9,10 @@ import React, {
   useState,
 } from "react";
 import { spreads, tarotDeck } from "../lib/tarot-data";
-import { TarotCardData, TarotReading, TarotSession, TarotSpread } from "../lib/types";
+import { TarotCardData, TarotReading, TarotSession, TarotSpread, UserProfile } from "../lib/types";
 import { createId, pickUnique } from "../lib/utils";
-import { clearSessions, getSessions, upsertSession } from "../lib/storage";
+import { clearSessions, getProfile, getSessions, saveProfile, upsertSession } from "../lib/storage";
+import { getZodiacSign } from "../lib/astro";
 
 type ReadingCardView = {
   card: TarotCardData;
@@ -37,6 +38,8 @@ type TarotContextValue = {
   toggleHistory: () => void;
   loadSession: (id: string) => void;
   clearHistory: () => void;
+  profile: UserProfile;
+  setBirthDate: (value: string) => void;
 };
 
 const TarotContext = createContext<TarotContextValue | null>(null);
@@ -46,6 +49,7 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
   const [currentReading, setCurrentReading] = useState<TarotReading | null>(null);
   const [history, setHistory] = useState<TarotSession[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [profile, setProfile] = useState<UserProfile>({ birthDate: null, zodiac: null });
 
   const deckMap = useMemo(() => new Map(tarotDeck.map((card) => [card.id, card])), []);
 
@@ -163,6 +167,39 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
     getSessions().then((sessions) => setHistory(sessions)).catch(() => undefined);
   }, []);
 
+  useEffect(() => {
+    getProfile()
+      .then((stored) => {
+        if (!stored) return;
+        setProfile({ birthDate: stored.birthDate, zodiac: stored.zodiac as UserProfile["zodiac"] });
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const setBirthDate = useCallback((value: string) => {
+    if (!value) {
+      const next = { birthDate: null, zodiac: null };
+      setProfile(next);
+      saveProfile({ id: "profile", ...next }).catch(() => undefined);
+      return;
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return;
+    const zodiac = getZodiacSign(date);
+    const next = {
+      birthDate: value,
+      zodiac: {
+        id: zodiac.id,
+        name: zodiac.name,
+        element: zodiac.element,
+        focus: zodiac.focus,
+        tone: zodiac.tone,
+      },
+    };
+    setProfile(next);
+    saveProfile({ id: "profile", ...next }).catch(() => undefined);
+  }, []);
+
   const value = useMemo(
     () => ({
       spreads,
@@ -181,6 +218,8 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
       toggleHistory,
       loadSession,
       clearHistory,
+      profile,
+      setBirthDate,
     }),
     [
       activeIndex,
@@ -190,12 +229,14 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
       history,
       historyOpen,
       loadSession,
+      profile,
       readingCards,
       revealAll,
       revealCard,
       selectSpread,
       selectedSpreadId,
       setActiveIndex,
+      setBirthDate,
       startReading,
       toggleHistory,
     ]

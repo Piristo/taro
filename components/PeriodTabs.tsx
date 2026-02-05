@@ -10,9 +10,9 @@ type PeriodTabsProps = {
 };
 
 const options: Array<{ id: PeriodKey; label: string }> = [
-  { id: "today", label: "Today" },
-  { id: "week", label: "This week" },
-  { id: "year", label: "This year" },
+  { id: "today", label: "Сегодня" },
+  { id: "week", label: "Эта неделя" },
+  { id: "year", label: "Этот год" },
 ];
 
 export default function PeriodTabs({ value, onChange }: PeriodTabsProps) {

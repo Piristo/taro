@@ -34,6 +34,8 @@ export default function TarotHome() {
     toggleHistory,
     loadSession,
     clearHistory,
+    profile,
+    setBirthDate,
   } = useTarot();
 
   const predictive = usePredictiveUI(spreads, history);
@@ -47,6 +49,10 @@ export default function TarotHome() {
     const seed = hashString(currentReading.id);
     return notes[seed % notes.length];
   }, [currentReading?.id]);
+
+  const zodiacNote = profile.zodiac
+    ? `Ваш знак: ${profile.zodiac.name} · ${profile.zodiac.element} · ${profile.zodiac.tone}. Фокус: ${profile.zodiac.focus}.`
+    : "Добавьте дату рождения, чтобы получить персональный тон расклада.";
 
   const activeCard = readingCards[activeIndex];
   const hasReading = Boolean(currentReading);
@@ -113,7 +119,7 @@ export default function TarotHome() {
               <div className="h-10 w-10 rounded-full border border-[rgba(218,165,32,0.35)] bg-[rgba(18,10,7,0.8)] shadow-ritual" />
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-[var(--ink-300)]">
-                  Hi seeker
+                  Привет, искатель
                 </p>
                 <h1 className="text-xl text-[var(--ink-100)]">Таро Гадание</h1>
               </div>
@@ -139,7 +145,7 @@ export default function TarotHome() {
           <motion.div variants={fadeUp} className="card-panel flex flex-col gap-3 p-4">
             <div className="section-head">
               <div>
-                <p className="section-title">Your ritual</p>
+                <p className="section-title">Ваш ритуал</p>
                 <h2 className="text-lg text-[var(--ink-100)]">Мистический фокус</h2>
               </div>
               <button
@@ -147,10 +153,26 @@ export default function TarotHome() {
                 onClick={() => startReading()}
                 className="rounded-full bg-[var(--gold-400)] px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-black"
               >
-                New draw
+                Новый расклад
               </button>
             </div>
             <p className="text-sm text-[var(--ink-200)]">{predictive.message}</p>
+            <div className="card-panel soft flex flex-col gap-3 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="section-title">Дата рождения</p>
+                  <p className="text-sm text-[var(--ink-100)]">Персональный тон расклада</p>
+                </div>
+                <input
+                  type="date"
+                  value={profile.birthDate ?? ""}
+                  onChange={(event) => setBirthDate(event.target.value)}
+                  className="date-input"
+                  aria-label="Дата рождения"
+                />
+              </div>
+              <p className="text-xs text-[var(--ink-200)]">{zodiacNote}</p>
+            </div>
             <CardDisplay
               spread={currentSpread}
               cards={readingCards}
@@ -160,8 +182,9 @@ export default function TarotHome() {
               onHold={handleHold}
               showHeader={false}
               variant="plain"
+              cardSize="sm"
             />
-            <div className="flex items-center justify-between text-xs text-[var(--ink-300)]">
+            <div className="flex flex-col gap-1 text-xs text-[var(--ink-300)]">
               <span>Оффлайн · {deckCount} карт · без рекламы</span>
               <span className="text-[var(--gold-400)]">{supportNote}</span>
             </div>
@@ -179,17 +202,17 @@ export default function TarotHome() {
           <div className="card-panel flex flex-col gap-4 p-4">
             <div className="section-head">
               <div>
-                <p className="section-title">Energy</p>
+                <p className="section-title">Энергия</p>
                 <h3 className="text-lg text-[var(--ink-100)]">Баланс дня</h3>
               </div>
               <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--gold-400)]">
-                Today
+                Сегодня
               </span>
             </div>
             <div className="flex gap-3">
-              <StatRing label="Love" value={74} tone="gold" />
-              <StatRing label="Flow" value={62} tone="ember" />
-              <StatRing label="Work" value={81} tone="ivory" />
+              <StatRing label="Любовь" value={74} tone="gold" />
+              <StatRing label="Поток" value={62} tone="ember" />
+              <StatRing label="Работа" value={81} tone="ivory" />
             </div>
           </div>
 
@@ -198,6 +221,7 @@ export default function TarotHome() {
             position={activeCard?.position}
             isRevealed={activeCard?.isRevealed ?? false}
             isReversed={activeCard?.isReversed ?? false}
+            zodiac={profile.zodiac}
           />
 
           <button
@@ -205,7 +229,7 @@ export default function TarotHome() {
             onClick={() => startReading()}
             className="rounded-2xl bg-gradient-to-r from-[#f7b267] to-[#f08c3a] px-6 py-4 text-center text-sm uppercase tracking-[0.3em] text-[#1a110c]"
           >
-            What can I do today
+            Что мне делать сегодня
           </button>
 
           <div className="relative h-2">

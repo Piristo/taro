@@ -62,3 +62,14 @@ export type TarotReading = {
 export type TarotSession = TarotReading & {
   summary?: string;
 };
+
+export type UserProfile = {
+  birthDate: string | null;
+  zodiac: {
+    id: string;
+    name: string;
+    element: string;
+    focus: string;
+    tone: string;
+  } | null;
+};

@@ -2,6 +2,7 @@ import { TarotSession } from "./types";
 
 const DB_NAME = "taro-ritual-db";
 const STORE_NAME = "sessions";
+const PROFILE_STORE = "profile";
 const DB_VERSION = 1;
 
 function openDb() {
@@ -13,6 +14,9 @@ function openDb() {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
         store.createIndex("createdAt", "createdAt", { unique: false });
+      }
+      if (!db.objectStoreNames.contains(PROFILE_STORE)) {
+        db.createObjectStore(PROFILE_STORE, { keyPath: "id" });
       }
     };
 
@@ -59,4 +63,28 @@ export async function clearSessions() {
   await withStore("readwrite", (store) => {
     store.clear();
   });
+}
+
+export async function saveProfile(profile: { id: string; birthDate: string | null; zodiac: unknown }) {
+  const db = await openDb();
+  return new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(PROFILE_STORE, "readwrite");
+    const store = transaction.objectStore(PROFILE_STORE);
+    store.put(profile);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+}
+
+export async function getProfile() {
+  const db = await openDb();
+  return new Promise<{ id: string; birthDate: string | null; zodiac: unknown } | null>(
+    (resolve, reject) => {
+      const transaction = db.transaction(PROFILE_STORE, "readonly");
+      const store = transaction.objectStore(PROFILE_STORE);
+      const request = store.get("profile");
+      request.onsuccess = () => resolve((request.result as { id: string; birthDate: string | null; zodiac: unknown }) ?? null);
+      request.onerror = () => reject(request.error);
+    }
+  );
 }
