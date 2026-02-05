@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, useRef } from "react";
+import { useRef, useState } from "react";
+import Image from "next/image";
 import { TarotCardData } from "../lib/types";
-import { cn, seededRandom } from "../lib/utils";
+import { cn } from "../lib/utils";
 import { useCardFlip } from "../hooks/useCardFlip";
+import { getRwsImagePath } from "../lib/rws-images";
 
 type TarotCardProps = {
   card: TarotCardData;
@@ -36,6 +38,9 @@ export default function TarotCard({
   const holdTimer = useRef<number | null>(null);
   const didHold = useRef(false);
   const { rotateY, rotateZ } = useCardFlip({ isRevealed, isReversed });
+  const [imageError, setImageError] = useState(false);
+  const imagePath = getRwsImagePath(card);
+  const showImage = Boolean(imagePath) && !imageError;
   const isSmall = size === "sm";
   const arcanaLabel = isSmall ? (card.arcana === "major" ? "Ст." : "Мл.") : card.arcana === "major" ? "Старший" : "Младший";
   const elementLabel = isSmall
@@ -47,20 +52,12 @@ export default function TarotCard({
     : card.element;
   const orientationLabel = isSmall
     ? isReversed
-      ? "Перев." : "Прямая"
+      ? "Перев."
+      : "Прямая"
     : isReversed
       ? "Перевернутая"
       : "Прямая";
-
-  const stars = useMemo(() => {
-    const rand = seededRandom(card.seed);
-    return Array.from({ length: 14 }).map(() => ({
-      cx: 20 + rand() * 160,
-      cy: 20 + rand() * 280,
-      r: 0.6 + rand() * 1.6,
-      o: 0.25 + rand() * 0.5,
-    }));
-  }, [card.seed]);
+  const topLabel = card.arcana === "major" ? String(card.number ?? "") : card.rank ?? "";
 
   const handlePointerDown = () => {
     didHold.current = false;
@@ -133,7 +130,7 @@ export default function TarotCard({
 
         <div
           className={cn(
-            "tarot-card-face tarot-card-front absolute inset-0",
+            "tarot-card-face tarot-card-front absolute inset-0 relative",
             isRevealed ? "shine-sweep" : ""
           )}
           style={{ transform: "rotateY(180deg)" }}
@@ -142,94 +139,69 @@ export default function TarotCard({
             className="flex h-full w-full flex-col items-center justify-between px-3 py-4"
             style={{ transform: `rotate(${rotateZ}deg)` }}
           >
-            <div
-              className={cn(
-                "flex w-full items-center justify-between uppercase text-[var(--ink-300)]",
-                isSmall ? "text-[8px] tracking-[0.18em]" : "text-[10px] tracking-[0.2em]"
-              )}
-            >
-              <span>{arcanaLabel}</span>
-              <span className="text-[var(--gold-400)]">{elementLabel}</span>
-            </div>
-
-            <div className="w-full flex-1">
-              <svg viewBox="0 0 200 320" className="h-full w-full">
-                <defs>
-                  <linearGradient id={`grad-${card.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3a1f12" />
-                    <stop offset="50%" stopColor="#1f0f08" />
-                    <stop offset="100%" stopColor="#3a1f12" />
-                  </linearGradient>
-                </defs>
-                <rect x="10" y="10" width="180" height="300" rx="20" fill={`url(#grad-${card.id})`} stroke="#8b4513" strokeWidth="1" />
-                {stars.map((star, index) => (
-                  <circle
-                    key={`${card.id}-star-${index}`}
-                    cx={star.cx}
-                    cy={star.cy}
-                    r={star.r}
-                    fill="#d9a73b"
-                    opacity={star.o}
+            <div className="w-full flex-1 px-1 py-2">
+              <div className="rws-frame">
+                {showImage ? (
+                  <Image
+                    src={imagePath ?? ""}
+                    alt={card.name}
+                    className="rws-image"
+                    fill
+                    sizes="(max-width: 640px) 160px, 220px"
+                    onError={() => setImageError(true)}
                   />
-                ))}
-                <circle cx="100" cy="160" r="46" fill="none" stroke="#d9a73b" strokeWidth="1.4" opacity="0.6" />
-                {card.arcana === "major" ? (
-                  <path
-                    d="M100 112 L114 146 L151 146 L121 168 L132 204 L100 182 L68 204 L79 168 L49 146 L86 146 Z"
-                    fill="none"
-                    stroke="#d9a73b"
-                    strokeWidth="1.4"
-                    opacity="0.8"
-                  />
-                ) : card.suit === "wands" ? (
-                  <g stroke="#d9a73b" strokeWidth="2" opacity="0.8" fill="none">
-                    <path d="M100 112 L100 210" />
-                    <path d="M92 130 L108 140" />
-                    <path d="M92 160 L108 170" />
-                    <path d="M92 190 L108 200" />
-                  </g>
-                ) : card.suit === "cups" ? (
-                  <g stroke="#d9a73b" strokeWidth="2" opacity="0.8" fill="none">
-                    <path d="M70 140 H130" />
-                    <path d="M70 140 C70 170 130 170 130 140" />
-                    <path d="M82 170 H118" />
-                    <path d="M90 170 V190 H110 V170" />
-                  </g>
-                ) : card.suit === "swords" ? (
-                  <g stroke="#d9a73b" strokeWidth="2" opacity="0.8" fill="none">
-                    <path d="M100 112 L100 205" />
-                    <path d="M90 150 H110" />
-                    <path d="M96 205 L104 205 L100 214 Z" />
-                  </g>
                 ) : (
-                  <path
-                    d="M100 118 L112 150 L148 150 L119 170 L130 204 L100 184 L70 204 L81 170 L52 150 L88 150 Z"
-                    fill="none"
-                    stroke="#d9a73b"
-                    strokeWidth="1.4"
-                    opacity="0.8"
-                  />
+                  <div
+                    className="rws-card"
+                    data-arcana={card.arcana}
+                    data-suit={card.suit}
+                  >
+                    <div className="rws-top">{topLabel}</div>
+                    <div className="rws-art" data-suit={card.suit} data-arcana={card.arcana}>
+                      <div className="rws-glyph">
+                        {card.arcana === "major" ? (
+                          <svg viewBox="0 0 64 64" width="48" height="48" fill="none">
+                            <circle cx="32" cy="32" r="18" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M32 14L36 26H48L38 34L42 48L32 40L22 48L26 34L16 26H28L32 14Z" stroke="#1f120d" strokeWidth="2" fill="none" />
+                          </svg>
+                        ) : card.suit === "cups" ? (
+                          <svg viewBox="0 0 64 64" width="44" height="44" fill="none">
+                            <path d="M18 24H46" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M18 24C18 40 46 40 46 24" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M26 40H38" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M28 40V50H36V40" stroke="#1f120d" strokeWidth="2" />
+                          </svg>
+                        ) : card.suit === "wands" ? (
+                          <svg viewBox="0 0 64 64" width="44" height="44" fill="none">
+                            <path d="M32 14V50" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M26 22L38 28" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M26 34L38 40" stroke="#1f120d" strokeWidth="2" />
+                          </svg>
+                        ) : card.suit === "swords" ? (
+                          <svg viewBox="0 0 64 64" width="44" height="44" fill="none">
+                            <path d="M32 12V48" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M24 26H40" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M28 48L36 48L32 56Z" stroke="#1f120d" strokeWidth="2" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 64 64" width="44" height="44" fill="none">
+                            <circle cx="32" cy="32" r="18" stroke="#1f120d" strokeWidth="2" />
+                            <path d="M32 16L36 28H48L38 36L42 48L32 40L22 48L26 36L16 28H28L32 16Z" stroke="#1f120d" strokeWidth="2" fill="none" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <div className="rws-title">{card.name}</div>
+                    <div className="rws-orientation">{orientationLabel}</div>
+                  </div>
                 )}
-                <circle cx="100" cy="160" r="6" fill="#d9a73b" opacity="0.8" />
-              </svg>
-            </div>
-
-            <div className="flex w-full flex-col items-center gap-1 pb-1">
-              <div
-                className={cn(
-                  "text-center uppercase text-[var(--ink-200)]",
-                  isSmall ? "text-[10px] tracking-[0.18em] leading-tight" : "text-sm tracking-[0.2em]"
-                )}
-              >
-                {card.name}
-              </div>
-              <div
-                className={cn(
-                  "uppercase text-[var(--gold-400)]",
-                  isSmall ? "text-[8px] tracking-[0.2em]" : "text-[10px] tracking-[0.25em]"
-                )}
-              >
-                {orientationLabel}
+                <div className="rws-badge">
+                  <span>{orientationLabel}</span>
+                </div>
+                <div className="rws-meta">
+                  <span>{arcanaLabel}</span>
+                  <span>{elementLabel}</span>
+                </div>
               </div>
             </div>
           </div>

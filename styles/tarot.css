@@ -98,7 +98,7 @@
   }
 
   .tarot-card-front {
-    background: linear-gradient(160deg, rgba(25, 13, 8, 0.9), rgba(44, 24, 16, 0.8));
+    background: transparent;
   }
 
   .tarot-card.is-revealed .tarot-card-front {
@@ -107,6 +107,143 @@
       0 18px 40px rgba(0, 0, 0, 0.45),
       0 0 28px rgba(218, 165, 32, 0.2);
     animation: reveal-glow 1.8s ease;
+  }
+
+  .rws-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 16px;
+    background: #f2e8d2;
+    border: 2px solid #2b1d14;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+    padding: 8px 8px 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rws-frame {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f2e8d2;
+    border: 2px solid #2b1d14;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.45);
+  }
+
+  .rws-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .rws-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(18, 10, 7, 0.75);
+    border: 1px solid rgba(218, 165, 32, 0.4);
+    color: var(--ink-100);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .rws-meta {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    display: flex;
+    gap: 6px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: rgba(18, 10, 7, 0.7);
+    border: 1px solid rgba(218, 165, 32, 0.35);
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-100);
+  }
+
+  .rws-card::after {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(43, 29, 20, 0.35);
+    pointer-events: none;
+  }
+
+  .rws-top {
+    font-size: 12px;
+    text-align: center;
+    letter-spacing: 0.22em;
+    color: #2b1d14;
+  }
+
+  .rws-art {
+    flex: 1;
+    margin: 6px 4px 8px;
+    border-radius: 12px;
+    border: 1px solid #2b1d14;
+    display: grid;
+    place-items: center;
+    background:
+      linear-gradient(180deg, rgba(234, 222, 200, 0.9), rgba(222, 206, 176, 0.85)),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.7), transparent 55%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rws-art[data-suit="cups"] {
+    background:
+      linear-gradient(180deg, #d7e6f2, #c2d6e7),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8), transparent 55%);
+  }
+
+  .rws-art[data-suit="wands"] {
+    background:
+      linear-gradient(180deg, #f5d7b6, #e6b98d),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8), transparent 55%);
+  }
+
+  .rws-art[data-suit="swords"] {
+    background:
+      linear-gradient(180deg, #e5e9ef, #cfd6e1),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8), transparent 55%);
+  }
+
+  .rws-art[data-suit="pentacles"] {
+    background:
+      linear-gradient(180deg, #e7e2cf, #d4c8a6),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.8), transparent 55%);
+  }
+
+  .rws-glyph {
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15));
+  }
+
+  .rws-title {
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #2b1d14;
+  }
+
+  .rws-orientation {
+    font-size: 9px;
+    text-align: center;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(43, 29, 20, 0.75);
+    margin-top: 2px;
   }
 
   .float-slow {

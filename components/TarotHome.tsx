@@ -74,6 +74,7 @@ export default function TarotHome() {
     telegram.setColors("#2C1810", "#1B0F0A");
   }, []);
 
+
   const handleFlip = (index: number) => {
     revealCard(index);
     telegram.haptic("light");
@@ -107,8 +108,8 @@ export default function TarotHome() {
       week: "five-cross",
       year: "nine-grid",
     };
-    selectSpread(spreadMap[period] ?? selectedSpreadId);
-  }, [period, selectSpread, selectedSpreadId]);
+    selectSpread(spreadMap[period]);
+  }, [period, selectSpread]);
 
   return (
     <div className="relative min-h-screen">
@@ -187,8 +188,12 @@ export default function TarotHome() {
                     type="date"
                     value={profile.birthDate ?? ""}
                     onChange={(event) => {
-                      setBirthDate(event.target.value);
-                      setEditingBirth(false);
+                      const next = event.target.value;
+                      setBirthDate(next);
+                      if (next) setEditingBirth(false);
+                    }}
+                    onBlur={() => {
+                      if (profile.birthDate) setEditingBirth(false);
                     }}
                     className="date-input"
                     aria-label="Дата рождения"
