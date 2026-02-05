@@ -925,10 +925,10 @@ export const spreads: TarotSpread[] = [
   },
   {
     id: "celtic-10",
-    name: "Кельтский крест",
+    name: "Кельтский крест (скрыт)",
     count: 10,
     layout: "celtic",
-    description: "Классический расклад для глубокой картины ситуации.",
+    description: "Скрыт из интерфейса. Оставлен для совместимости истории.",
     positions: [
       { title: "Суть", hint: "Ядро вопроса", gridArea: "2 / 2" },
       { title: "Влияние", hint: "Пересекающий фактор", gridArea: "2 / 2" },

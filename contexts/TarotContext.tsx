@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { spreads, tarotDeck } from "../lib/tarot-data";
+import { spreads as allSpreads, tarotDeck } from "../lib/tarot-data";
 import { TarotCardData, TarotReading, TarotSession, TarotSpread, UserProfile } from "../lib/types";
 import { createId, pickUnique } from "../lib/utils";
 import { clearSessions, getProfile, getSessions, saveProfile, upsertSession } from "../lib/storage";
@@ -66,6 +66,7 @@ type ReadingCardView = {
 
 type TarotContextValue = {
   spreads: TarotSpread[];
+  spreadsAll: TarotSpread[];
   selectedSpreadId: string;
   selectSpread: (id: string) => void;
   startReading: (spreadId?: string) => void;
@@ -88,7 +89,11 @@ type TarotContextValue = {
 const TarotContext = createContext<TarotContextValue | null>(null);
 
 export function TarotProvider({ children }: { children: React.ReactNode }) {
-  const [selectedSpreadId, setSelectedSpreadId] = useState(spreads[0]?.id ?? "");
+  const availableSpreads = useMemo(
+    () => allSpreads.filter((spread) => spread.id !== "celtic-10"),
+    []
+  );
+  const [selectedSpreadId, setSelectedSpreadId] = useState(availableSpreads[0]?.id ?? "");
   const [currentReading, setCurrentReading] = useState<TarotReading | null>(null);
   const [history, setHistory] = useState<TarotSession[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -97,7 +102,10 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
   const deckMap = useMemo(() => new Map(tarotDeck.map((card) => [card.id, card])), []);
 
   const currentSpread = useMemo(
-    () => spreads.find((spread) => spread.id === (currentReading?.spreadId ?? selectedSpreadId)) ?? null,
+    () =>
+      allSpreads.find(
+        (spread) => spread.id === (currentReading?.spreadId ?? selectedSpreadId)
+      ) ?? null,
     [currentReading?.spreadId, selectedSpreadId]
   );
 
@@ -133,7 +141,8 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
   const startReading = useCallback(
     (spreadId?: string) => {
       const targetSpreadId = spreadId ?? selectedSpreadId;
-      const spread = spreads.find((item) => item.id === targetSpreadId) ?? spreads[0];
+      const spread =
+        allSpreads.find((item) => item.id === targetSpreadId) ?? availableSpreads[0];
       if (!spread) return;
 
       const picks = pickUnique(tarotDeck, spread.count);
@@ -153,7 +162,7 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
       setCurrentReading(reading);
       persistReading(reading);
     },
-    [persistReading, selectedSpreadId]
+    [availableSpreads, persistReading, selectedSpreadId]
   );
 
   const revealCard = useCallback((index: number) => {
@@ -246,7 +255,8 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
-      spreads,
+      spreads: availableSpreads,
+      spreadsAll: allSpreads,
       selectedSpreadId,
       selectSpread,
       startReading,
@@ -267,6 +277,8 @@ export function TarotProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       activeIndex,
+      availableSpreads,
+      // allSpreads is module-level constant; safe to omit
       currentReading,
       currentSpread,
       clearHistory,

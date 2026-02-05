@@ -20,6 +20,7 @@ import StatRing from "./StatRing";
 export default function TarotHome() {
   const {
     spreads,
+    spreadsAll,
     selectedSpreadId,
     selectSpread,
     startReading,
@@ -195,25 +196,47 @@ export default function TarotHome() {
             <p className="text-sm text-[var(--ink-200)]">{predictive.message}</p>
             {showBirthForm ? (
               <div className="card-panel soft flex flex-col gap-3 p-3">
-                <div className="flex items-center justify-between gap-2">
+                <div className="profile-date-row">
                   <div>
                     <p className="section-title">Дата рождения</p>
                     <p className="text-sm text-[var(--ink-100)]">Персональный тон расклада</p>
                   </div>
-                  <input
-                    type="date"
-                    value={profile.birthDate ?? ""}
-                    onChange={(event) => {
-                      const next = event.target.value;
-                      setBirthDate(next);
-                      if (next) setEditingBirth(false);
-                    }}
-                    onBlur={() => {
-                      if (profile.birthDate) setEditingBirth(false);
-                    }}
-                    className="date-input"
-                    aria-label="Дата рождения"
-                  />
+                  <div className="profile-date-field">
+                    <button
+                      type="button"
+                      className="profile-date-button"
+                      onClick={() => {
+                        const el = document.getElementById("birth-date-input") as HTMLInputElement | null;
+                        el?.showPicker?.();
+                        el?.focus();
+                      }}
+                    >
+                      {profile.birthDate ? formatBirthDate(profile.birthDate) : "ДД.ММ.ГГГГ"}
+                      <span aria-hidden="true" className="profile-date-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                          <path d="M7 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path d="M17 3V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path d="M4 9H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <path d="M6 6H18C19.1 6 20 6.9 20 8V19C20 20.1 19.1 21 18 21H6C4.9 21 4 20.1 4 19V8C4 6.9 4.9 6 6 6Z" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                      </span>
+                    </button>
+                    <input
+                      id="birth-date-input"
+                      type="date"
+                      value={profile.birthDate ?? ""}
+                      onChange={(event) => {
+                        const next = event.target.value;
+                        setBirthDate(next);
+                        if (next) setEditingBirth(false);
+                      }}
+                      onBlur={() => {
+                        if (profile.birthDate) setEditingBirth(false);
+                      }}
+                      className="profile-date-input"
+                      aria-label="Дата рождения"
+                    />
+                  </div>
                 </div>
                 <p className="text-xs text-[var(--ink-200)]">{zodiacNote}</p>
               </div>
@@ -231,17 +254,19 @@ export default function TarotHome() {
                 <span className="profile-pill-action">Изменить</span>
               </button>
             )}
-            <CardDisplay
-              spread={currentSpread}
-              cards={readingCards}
-              activeIndex={activeIndex}
-              onActiveIndex={setActiveIndex}
-              onFlip={handleFlip}
-              onHold={handleHold}
-              showHeader={false}
-              variant="plain"
-              cardSize="sm"
-            />
+            <div className={ritualDense ? "ritual-cards dense" : "ritual-cards"}>
+              <CardDisplay
+                spread={currentSpread}
+                cards={readingCards}
+                activeIndex={activeIndex}
+                onActiveIndex={setActiveIndex}
+                onFlip={handleFlip}
+                onHold={handleHold}
+                showHeader={false}
+                variant="plain"
+                cardSize={ritualCardSize}
+              />
+            </div>
             <div className="flex flex-col gap-1 text-xs text-[var(--ink-300)]">
               <span>Оффлайн · {deckCount} карт · без рекламы</span>
               <span className="text-[var(--gold-400)]">{supportNote}</span>
@@ -399,7 +424,7 @@ export default function TarotHome() {
       <HistoryDrawer
         open={historyOpen}
         history={history}
-        spreads={spreads}
+        spreads={spreadsAll}
         cardNames={cardNames}
         onClose={toggleHistory}
         onSelect={loadSession}
@@ -408,3 +433,9 @@ export default function TarotHome() {
     </div>
   );
 }
+  const ritualDense =
+    currentSpread?.layout === "cross" ||
+    currentSpread?.layout === "grid" ||
+    currentSpread?.layout === "celtic";
+
+  const ritualCardSize = ritualDense ? "xs" : "sm";
