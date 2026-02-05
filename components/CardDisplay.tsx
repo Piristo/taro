@@ -20,6 +20,8 @@ type CardDisplayPropsInternal = {
   onActiveIndex: (index: number) => void;
   onFlip: (index: number) => void;
   onHold: (index: number) => void;
+  showHeader?: boolean;
+  variant?: "panel" | "plain";
 };
 
 const parseGridArea = (value?: string) => {
@@ -36,6 +38,8 @@ export default function CardDisplay({
   onActiveIndex,
   onFlip,
   onHold,
+  showHeader = true,
+  variant = "panel",
 }: CardDisplayPropsInternal) {
   const handlers = useSwipe({
     onSwipeLeft: () => onActiveIndex(activeIndex + 1),
@@ -44,7 +48,12 @@ export default function CardDisplay({
 
   if (!spread || cards.length === 0) {
     return (
-      <div className="glass-panel flex min-h-[260px] items-center justify-center p-10 text-center text-[var(--ink-300)]">
+      <div
+        className={cn(
+          variant === "panel" ? "card-panel" : "",
+          "flex min-h-[260px] items-center justify-center p-10 text-center text-[var(--ink-300)]"
+        )}
+      >
         Карты ждут вашего вопроса.
       </div>
     );
@@ -57,20 +66,22 @@ export default function CardDisplay({
   return (
     <div
       className={cn(
-        "glass-panel flex w-full flex-col gap-4 p-4",
-        layout === "line" ? "" : ""
+        variant === "panel" ? "card-panel" : "",
+        "flex w-full flex-col gap-4"
       )}
       {...handlers}
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-[var(--ink-300)]">Расклад</p>
-          <h3 className="text-lg text-[var(--ink-100)]">{spread.name}</h3>
+      {showHeader ? (
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-[var(--ink-300)]">Расклад</p>
+            <h3 className="text-lg text-[var(--ink-100)]">{spread.name}</h3>
+          </div>
+          <div className="text-xs uppercase tracking-[0.3em] text-[var(--gold-400)]">
+            {spread.count} карт
+          </div>
         </div>
-        <div className="text-xs uppercase tracking-[0.3em] text-[var(--gold-400)]">
-          {spread.count} карт
-        </div>
-      </div>
+      ) : null}
 
       {layout === "line" ? (
         <div className="flex gap-4 overflow-x-auto pb-2">

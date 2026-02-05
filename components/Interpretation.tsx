@@ -40,7 +40,7 @@ export default function Interpretation({
 
   return (
     <motion.div
-      className="glass-panel soft flex flex-col gap-4 p-5"
+      className="card-panel flex flex-col gap-4 p-5"
       variants={fadeUp}
       initial="hidden"
       animate="show"
