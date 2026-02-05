@@ -55,7 +55,15 @@ export default function Interpretation({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-[var(--ink-300)]">Интерпретация</p>
-          <h3 className="text-xl text-[var(--ink-100)]">{card.name}</h3>
+          <div className="flex items-center gap-2">
+            <span className="section-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12C7.5 8 9.5 7 12 7C14.5 7 16.5 8 19 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path d="M9 16C10 14.5 11 14 12 14C13 14 14 14.5 15 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </span>
+            <h3 className="text-xl text-[var(--ink-100)]">{card.name}</h3>
+          </div>
           <p className="text-sm text-[var(--gold-400)]">
             {position?.title ?? "Позиция"} · {isReversed ? "Перевернутая" : "Прямая"}
           </p>

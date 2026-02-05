@@ -58,6 +58,8 @@ export default function TarotHome() {
   const hasReading = Boolean(currentReading);
   const [period, setPeriod] = useState<PeriodKey>("today");
   const [navActive, setNavActive] = useState("home");
+  const [editingBirth, setEditingBirth] = useState(false);
+  const showBirthForm = editingBirth || !profile.birthDate;
 
   const { pull, ready, handlers } = usePullToRefresh({
     onRefresh: () => {
@@ -85,6 +87,12 @@ export default function TarotHome() {
   const handleClearHistory = () => {
     const confirmed = window.confirm("Очистить историю сессий? Это действие нельзя отменить.");
     if (confirmed) clearHistory();
+  };
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const deckCount = useMemo(() => tarotDeck.length, []);
@@ -138,15 +146,26 @@ export default function TarotHome() {
             </button>
           </motion.div>
 
-          <motion.div variants={fadeUp}>
+          <motion.div variants={fadeUp} id="section-tabs">
             <PeriodTabs value={period} onChange={setPeriod} />
           </motion.div>
 
-          <motion.div variants={fadeUp} className="card-panel flex flex-col gap-3 p-4">
+          <motion.div
+            variants={fadeUp}
+            id="section-ritual"
+            className="card-panel flex flex-col gap-3 p-4"
+          >
             <div className="section-head">
               <div>
                 <p className="section-title">Ваш ритуал</p>
-                <h2 className="text-lg text-[var(--ink-100)]">Мистический фокус</h2>
+                <div className="flex items-center gap-2">
+                  <span className="section-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 3L14.6 8.6L20 9.4L16 13.2L17.2 18.6L12 15.6L6.8 18.6L8 13.2L4 9.4L9.4 8.6L12 3Z" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </span>
+                  <h2 className="text-lg text-[var(--ink-100)]">Мистический фокус</h2>
+                </div>
               </div>
               <button
                 type="button"
@@ -158,19 +177,38 @@ export default function TarotHome() {
             </div>
             <p className="text-sm text-[var(--ink-200)]">{predictive.message}</p>
             <div className="card-panel soft flex flex-col gap-3 p-3">
-              <div className="flex items-center justify-between gap-2">
-                <div>
-                  <p className="section-title">Дата рождения</p>
-                  <p className="text-sm text-[var(--ink-100)]">Персональный тон расклада</p>
+              {showBirthForm ? (
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="section-title">Дата рождения</p>
+                    <p className="text-sm text-[var(--ink-100)]">Персональный тон расклада</p>
+                  </div>
+                  <input
+                    type="date"
+                    value={profile.birthDate ?? ""}
+                    onChange={(event) => {
+                      setBirthDate(event.target.value);
+                      setEditingBirth(false);
+                    }}
+                    className="date-input"
+                    aria-label="Дата рождения"
+                  />
                 </div>
-                <input
-                  type="date"
-                  value={profile.birthDate ?? ""}
-                  onChange={(event) => setBirthDate(event.target.value)}
-                  className="date-input"
-                  aria-label="Дата рождения"
-                />
-              </div>
+              ) : (
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="section-title">Дата рождения</p>
+                    <p className="text-sm text-[var(--ink-100)]">{profile.birthDate ?? ""}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setEditingBirth(true)}
+                    className="rounded-full border border-[rgba(218,165,32,0.3)] px-3 py-2 text-[10px] uppercase tracking-[0.3em] text-[var(--ink-200)]"
+                  >
+                    Изменить
+                  </button>
+                </div>
+              )}
               <p className="text-xs text-[var(--ink-200)]">{zodiacNote}</p>
             </div>
             <CardDisplay
@@ -192,18 +230,28 @@ export default function TarotHome() {
         </motion.header>
 
         <main className="flex flex-col gap-6">
-          <SpreadSelector
-            spreads={spreads}
-            selectedId={selectedSpreadId}
-            recommendedId={predictive.recommendedId}
-            onSelect={selectSpread}
-          />
+          <div id="section-spread">
+            <SpreadSelector
+              spreads={spreads}
+              selectedId={selectedSpreadId}
+              recommendedId={predictive.recommendedId}
+              onSelect={selectSpread}
+            />
+          </div>
 
-          <div className="card-panel flex flex-col gap-4 p-4">
+          <div className="card-panel flex flex-col gap-4 p-4" id="section-energy">
             <div className="section-head">
               <div>
                 <p className="section-title">Энергия</p>
-                <h3 className="text-lg text-[var(--ink-100)]">Баланс дня</h3>
+                <div className="flex items-center gap-2">
+                  <span className="section-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path d="M4 14C6.5 8 10 6 12 6C14 6 17.5 8 20 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      <circle cx="12" cy="16" r="3.5" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                  </span>
+                  <h3 className="text-lg text-[var(--ink-100)]">Баланс дня</h3>
+                </div>
               </div>
               <span className="text-[10px] uppercase tracking-[0.3em] text-[var(--gold-400)]">
                 Сегодня
@@ -216,13 +264,15 @@ export default function TarotHome() {
             </div>
           </div>
 
-          <Interpretation
-            card={activeCard?.card}
-            position={activeCard?.position}
-            isRevealed={activeCard?.isRevealed ?? false}
-            isReversed={activeCard?.isReversed ?? false}
-            zodiac={profile.zodiac}
-          />
+          <div id="section-interpretation">
+            <Interpretation
+              card={activeCard?.card}
+              position={activeCard?.position}
+              isRevealed={activeCard?.isRevealed ?? false}
+              isReversed={activeCard?.isReversed ?? false}
+              zodiac={profile.zodiac}
+            />
+          </div>
 
           <button
             type="button"
@@ -245,10 +295,13 @@ export default function TarotHome() {
           </div>
         </main>
 
-        <nav className="bottom-nav">
+        <nav className="bottom-nav" id="section-nav">
           <button
             type="button"
-            onClick={() => setNavActive("home")}
+            onClick={() => {
+              setNavActive("home");
+              scrollToSection("section-tabs");
+            }}
             className={navActive === "home" ? "nav-item nav-item-active" : "nav-item"}
             aria-label="Home"
           >
@@ -258,7 +311,10 @@ export default function TarotHome() {
           </button>
           <button
             type="button"
-            onClick={() => setNavActive("cards")}
+            onClick={() => {
+              setNavActive("cards");
+              scrollToSection("section-ritual");
+            }}
             className={navActive === "cards" ? "nav-item nav-item-active" : "nav-item"}
             aria-label="Cards"
           >
@@ -283,7 +339,10 @@ export default function TarotHome() {
           </button>
           <button
             type="button"
-            onClick={() => setNavActive("audio")}
+            onClick={() => {
+              setNavActive("audio");
+              scrollToSection("section-interpretation");
+            }}
             className={navActive === "audio" ? "nav-item nav-item-active" : "nav-item"}
             aria-label="Audio"
           >

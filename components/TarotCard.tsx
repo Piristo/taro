@@ -89,7 +89,8 @@ export default function TarotCard({
         "tarot-card relative",
         sizeClasses[size],
         "cursor-pointer",
-        isActive ? "scale-[1.02]" : "scale-100"
+        isActive ? "scale-[1.02]" : "scale-100",
+        isRevealed ? "is-revealed" : ""
       )}
       onPointerDown={handlePointerDown}
       onPointerUp={cancelHold}
@@ -110,8 +111,12 @@ export default function TarotCard({
           "tarot-card-inner h-full w-full rounded-[20px]",
           isActive ? "glow-amber" : "shadow-ritual"
         )}
-        animate={{ rotateY }}
-        transition={{ duration: 0.65, ease: [0.22, 0.61, 0.36, 1] }}
+        animate={{
+          rotateY,
+          scale: isRevealed ? (isActive ? 1.03 : 1.01) : 1,
+          y: isRevealed ? (isActive ? -4 : -2) : 0,
+        }}
+        transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
         style={{ transformStyle: "preserve-3d" }}
       >
         <div className="tarot-card-face tarot-card-back absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -127,7 +132,10 @@ export default function TarotCard({
         </div>
 
         <div
-          className="tarot-card-face tarot-card-front absolute inset-0"
+          className={cn(
+            "tarot-card-face tarot-card-front absolute inset-0",
+            isRevealed ? "shine-sweep" : ""
+          )}
           style={{ transform: "rotateY(180deg)" }}
         >
           <div
